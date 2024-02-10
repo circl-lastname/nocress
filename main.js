@@ -62,12 +62,12 @@ function coordsValid(x, y) {
 
 function checkWinning() {
   if (piecesLeft[0] <= 2) {
-    winningPlayer = 1;
+    winningPlayer = 2;
     return;
   }
   
   if (piecesLeft[1] <= 2) {
-    winningPlayer = 2;
+    winningPlayer = 1;
     return;
   }
   
