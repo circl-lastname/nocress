@@ -15,13 +15,13 @@ let audioIllegal = new Audio("illegal.wav");
 
 let initialBoard = [
   [1, 0, 0, 0, 0, 0, 0, 0, 1],
-  [0, 0, 1, 0, 0, 0, 1, 0, 0],
-  [0, 0, 0, 0, 1, 0, 0, 0, 0],
-  [2, 1, 0, 0, 0, 0, 0, 1, 2],
   [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [1, 2, 0, 0, 0, 0, 0, 2, 1],
+  [0, 0, 0, 0, 1, 0, 0, 0, 0],
+  [0, 1, 0, 0, 0, 0, 0, 1, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 2, 0, 0, 0, 0, 0, 2, 0],
   [0, 0, 0, 0, 2, 0, 0, 0, 0],
-  [0, 0, 2, 0, 0, 0, 2, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0],
   [2, 0, 0, 0, 0, 0, 0, 0, 2],
 ];
 
@@ -61,36 +61,36 @@ function coordsValid(x, y) {
 }
 
 function checkWinning() {
-  if (piecesLeft[0] <= 2 || piecesLeft[1] <= 2) {
+  if (piecesLeft[0] <= 3 || piecesLeft[1] <= 3) {
     winningPlayer = 3;
     return;
   }
   
   for (let y = 0; y < 9; y++) {
     for (let x = 0; x < 9; x++) {
-      if (coordsValid(x+2, y)) {
-        if (board[y][x] != 0 && board[y][x+1] == board[y][x] && board[y][x+2] == board[y][x]) {
+      if (coordsValid(x+3, y)) {
+        if (board[y][x] != 0 && board[y][x+1] == board[y][x] && board[y][x+2] == board[y][x] && board[y][x+3] == board[y][x]) {
           winningPlayer = board[y][x];
           return;
         }
       }
       
-      if (coordsValid(x, y+2)) {
-        if (board[y][x] != 0 && board[y+1][x] == board[y][x] && board[y+2][x] == board[y][x]) {
+      if (coordsValid(x, y+3)) {
+        if (board[y][x] != 0 && board[y+1][x] == board[y][x] && board[y+2][x] == board[y][x] && board[y+3][x] == board[y][x]) {
           winningPlayer = board[y][x];
           return;
         }
       }
       
-      if (coordsValid(x+2, y+2)) {
-        if (board[y][x] != 0 && board[y+1][x+1] == board[y][x] && board[y+2][x+2] == board[y][x]) {
+      if (coordsValid(x+3, y+3)) {
+        if (board[y][x] != 0 && board[y+1][x+1] == board[y][x] && board[y+2][x+2] == board[y][x] && board[y+3][x+3] == board[y][x]) {
           winningPlayer = board[y][x];
           return;
         }
       }
       
-      if (coordsValid(x-2, y+2)) {
-        if (board[y][x] != 0 && board[y+1][x-1] == board[y][x] && board[y+2][x-2] == board[y][x]) {
+      if (coordsValid(x-3, y+3)) {
+        if (board[y][x] != 0 && board[y+1][x-1] == board[y][x] && board[y+2][x-2] == board[y][x] && board[y+3][x-3] == board[y][x]) {
           winningPlayer = board[y][x];
           return;
         }
@@ -141,8 +141,8 @@ function handleMouseDown(e) {
     }
     
     if (board[y][x] == playerOpposite()) {
-      piecesLeft[playerOpposite()-1]--;
-      audioCapture.play();
+      audioIllegal.play();
+      return;
     } else {
       audioMove.play();
     }
