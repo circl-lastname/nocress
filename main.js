@@ -117,6 +117,10 @@ function handleResize() {
 }
 
 function handleMouseDown(e) {
+  if (e.buttons != 1) {
+    return;
+  }
+  
   if (winningPlayer) {
     resetGame();
     redraw();
