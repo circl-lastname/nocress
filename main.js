@@ -62,7 +62,7 @@ function coordsValid(x, y) {
 
 function checkWinning() {
   if (piecesLeft[0] <= 2 || piecesLeft[1] <= 2) {
-    winningPlayer = 2;
+    winningPlayer = 3;
     return;
   }
   
@@ -190,7 +190,17 @@ function redraw() {
     }
   }
   
-  if (winningPlayer) {
+  if (winningPlayer == 3) {
+    ctx.font = `${cellSize*0.5}px sans-serif`;
+    let width = ctx.measureText("Fool's game").width;
+    
+    ctx.fillStyle = "#262522";
+    ctx.fillRect(0, 0, width, cellSize*0.5);
+    
+    ctx.fillStyle = "#ffffff";
+    ctx.textBaseline = "top";
+    ctx.fillText("Fool's game", 0, 0);
+  } else if (winningPlayer) {
     ctx.font = `${cellSize*0.5}px sans-serif`;
     let width = ctx.measureText("Winner:").width;
     
