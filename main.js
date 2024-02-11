@@ -14,15 +14,15 @@ let audioCapture = new Audio("capture.wav");
 let audioIllegal = new Audio("illegal.wav");
 
 let initialBoard = [
+  [1, 0, 0, 0, 1, 0, 0, 0, 1],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0],
   [1, 0, 0, 0, 0, 0, 0, 0, 1],
   [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 1, 0, 0, 0, 0],
-  [0, 1, 0, 0, 0, 0, 0, 1, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 2, 0, 0, 0, 0, 0, 2, 0],
-  [0, 0, 0, 0, 2, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0],
   [2, 0, 0, 0, 0, 0, 0, 0, 2],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [2, 0, 0, 0, 2, 0, 0, 0, 2],
 ];
 
 let board = [ [], [], [], [], [], [], [], [], [] ];
@@ -46,6 +46,8 @@ function resetGame() {
       board[y][x] = initialBoard[y][x];
     }
   }
+  
+  console.log("New game:");
 }
 
 function playerOpposite() {
@@ -53,6 +55,14 @@ function playerOpposite() {
     return 2;
   } else {
     return 1;
+  }
+}
+
+function playerString() {
+  if (currentPlayer == 1) {
+    return "X";
+  } else {
+    return "O";
   }
 }
 
@@ -146,6 +156,8 @@ function handleMouseDown(e) {
     } else {
       audioMove.play();
     }
+    
+    console.log(`${playerString()}: ${selectedCellX},${selectedCellY} -> ${x},${y}`);
     
     board[selectedCellY][selectedCellX] = 0;
     board[y][x] = currentPlayer;
