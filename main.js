@@ -10,7 +10,6 @@ let naught = new Image();
 naught.src = "o.svg";
 
 let audioMove = new Audio("move-self.wav");
-let audioCapture = new Audio("capture.wav");
 let audioIllegal = new Audio("illegal.wav");
 
 let initialBoard = [
@@ -26,7 +25,6 @@ let initialBoard = [
 ];
 
 let board = [ [], [], [], [], [], [], [], [], [] ];
-let piecesLeft;
 
 let selectedCellX;
 let selectedCellY;
@@ -35,7 +33,6 @@ let currentPlayer;
 let winningPlayer;
 
 function resetGame() {
-  piecesLeft = [ 9, 9 ];
   selectedCellX = -1;
   selectedCellY = -1;
   currentPlayer = 1;
@@ -71,11 +68,6 @@ function coordsValid(x, y) {
 }
 
 function checkWinning() {
-  if (piecesLeft[0] <= 3 || piecesLeft[1] <= 3) {
-    winningPlayer = 3;
-    return;
-  }
-  
   for (let y = 0; y < 9; y++) {
     for (let x = 0; x < 9; x++) {
       if (coordsValid(x+3, y)) {
@@ -144,18 +136,10 @@ function handleMouseDown(e) {
     selectedCellX = x;
     selectedCellY = y;
     redraw();
+  } else if (selectedCellX == -1 || board[y][x] == playerOpposite()) {
+    audioIllegal.play();
   } else {
-    if (selectedCellX == -1) {
-      audioIllegal.play();
-      return;
-    }
-    
-    if (board[y][x] == playerOpposite()) {
-      audioIllegal.play();
-      return;
-    } else {
-      audioMove.play();
-    }
+    audioMove.play();
     
     console.log(`${playerString()}: ${selectedCellX},${selectedCellY} -> ${x},${y}`);
     
@@ -206,17 +190,7 @@ function redraw() {
     }
   }
   
-  if (winningPlayer == 3) {
-    ctx.font = `${cellSize*0.5}px sans-serif`;
-    let width = ctx.measureText("Fool's game").width;
-    
-    ctx.fillStyle = "#262522";
-    ctx.fillRect(0, 0, width, cellSize*0.5);
-    
-    ctx.fillStyle = "#ffffff";
-    ctx.textBaseline = "top";
-    ctx.fillText("Fool's game", 0, 0);
-  } else if (winningPlayer) {
+  if (winningPlayer) {
     ctx.font = `${cellSize*0.5}px sans-serif`;
     let width = ctx.measureText("Winner:").width;
     
