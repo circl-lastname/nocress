@@ -203,6 +203,7 @@ function handleMouseDown(e) {
 function handleOnlineButton() {
   if (!server) {
     onlineStatus.innerText = "Connecting";
+    onlineButton.innerText = "Stop playing online";
     
     server = new WebSocket("wss://nocress-server-172-105-82-118.duckdns.org:6257");
     
@@ -216,12 +217,15 @@ function handleOnlineButton() {
     
     server.addEventListener("close", () => {
       onlineStatus.innerText = "Not connected (disable AdBlock?)";
+      onlineButton.innerText = "Play online";
       resetGame();
       redraw();
       server = undefined;
     });
     
     server.addEventListener("message", handleServer);
+  } else {
+    server.close();
   }
 }
 
