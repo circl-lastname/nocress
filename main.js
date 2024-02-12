@@ -215,7 +215,7 @@ function handleOnlineButton() {
     });
     
     server.addEventListener("close", () => {
-      onlineStatus.innerText = "Not connected";
+      onlineStatus.innerText = "Not connected (disable AdBlock?)";
       resetGame();
       redraw();
       server = undefined;
