@@ -204,7 +204,7 @@ function handleOnlineButton() {
   if (!server) {
     onlineStatus.innerText = "Connecting";
     
-    server = new WebSocket("ws://172.105.82.118:6257");
+    server = new WebSocket("wss://nocress-server-172-105-82-118.duckdns.org:6257");
     
     server.addEventListener("open", () => {
       onlineStatus.innerText = "Waiting for opponent";
