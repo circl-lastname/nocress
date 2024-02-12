@@ -1,6 +1,10 @@
 let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
 
+let server;
+let onlineButton = document.getElementById("onlineButton");
+let onlineStatus = document.getElementById("onlineStatus");
+
 let cellSize;
 
 let cross = new Image();
@@ -9,6 +13,7 @@ cross.src = "x.svg";
 let naught = new Image();
 naught.src = "o.svg";
 
+let audioStart = new Audio("game-start.wav");
 let audioMove = new Audio("move-self.wav");
 let audioIllegal = new Audio("illegal.wav");
 
@@ -31,12 +36,15 @@ let selectedCellY;
 
 let currentPlayer;
 let winningPlayer;
+let onlinePlayer;
 
 function resetGame() {
   selectedCellX = -1;
   selectedCellY = -1;
+  
   currentPlayer = 1;
   winningPlayer = 0;
+  onlinePlayer = 0;
   
   for (let y = 0; y < 9; y++) {
     for (let x = 0; x < 9; x++) {
@@ -101,8 +109,31 @@ function checkWinning() {
   }
 }
 
+function makeMove(fromX, fromY, x, y) {
+  audioMove.play();
+  
+  console.log(`${playerString()}: ${fromX},${fromY} -> ${x},${y}`);
+  
+  board[fromY][fromX] = 0;
+  board[y][x] = currentPlayer;
+  
+  checkWinning();
+  
+  currentPlayer = playerOpposite();
+}
+
+function sendMove(fromX, fromY, x, y) {
+  server.send(JSON.stringify({
+    action: "move",
+    fromX: fromX,
+    fromY: fromY,
+    x: x,
+    y: y,
+  }));
+}
+
 function handleResize() {
-  let size1 = window.innerHeight - 8 - 32;
+  let size1 = window.innerHeight - 16 - 32;
   let size2 = window.innerWidth - 16;
   
   let preferredSize;
@@ -127,8 +158,22 @@ function handleMouseDown(e) {
   }
   
   if (winningPlayer) {
+    if (onlinePlayer) {
+      onlineStatus.innerText = "Waiting for opponent";
+      
+      server.send(JSON.stringify({
+        action: "findOpponent"
+      }));
+    }
+    
     resetGame();
     redraw();
+    
+    return;
+  }
+  
+  if (currentPlayer == onlinePlayer) {
+    audioIllegal.play();
     return;
   }
   
@@ -142,19 +187,71 @@ function handleMouseDown(e) {
   } else if (selectedCellX == -1 || board[y][x] == playerOpposite()) {
     audioIllegal.play();
   } else {
-    audioMove.play();
+    makeMove(selectedCellX, selectedCellY, x, y);
     
-    console.log(`${playerString()}: ${selectedCellX},${selectedCellY} -> ${x},${y}`);
+    if (onlinePlayer) {
+      sendMove(selectedCellX, selectedCellY, x, y);
+    }
     
-    board[selectedCellY][selectedCellX] = 0;
-    board[y][x] = currentPlayer;
     selectedCellX = -1;
     selectedCellY = -1;
     
-    currentPlayer = playerOpposite();
+    redraw();
+  }
+}
+
+function handleOnlineButton() {
+  if (!server) {
+    onlineStatus.innerText = "Connecting";
     
-    checkWinning();
+    server = new WebSocket("ws://172.105.82.118:6257");
     
+    server.addEventListener("open", () => {
+      onlineStatus.innerText = "Waiting for opponent";
+      
+      server.send(JSON.stringify({
+        action: "findOpponent"
+      }));
+    });
+    
+    server.addEventListener("close", () => {
+      onlineStatus.innerText = "Not connected";
+      resetGame();
+      redraw();
+      server = undefined;
+    });
+    
+    server.addEventListener("message", handleServer);
+  }
+}
+
+function handleServer(e) {
+  let message = JSON.parse(e.data);
+  
+  if (message.action == "foundOpponent") {
+    onlineStatus.innerText = "Game started";
+    audioStart.play();
+    
+    resetGame();
+    onlinePlayer = message.opponent;
+    
+    redraw();
+  } else if (message.action == "gameEnd") {
+    if (!winningPlayer) {
+      resetGame();
+      
+      onlineStatus.innerText = "Waiting for opponent";
+      
+      server.send(JSON.stringify({
+        action: "findOpponent"
+      }));
+      
+      redraw();
+    } else {
+      onlineStatus.innerText = "Game ended";
+    }
+  } else if (message.action == "move") {
+    makeMove(message.fromX, message.fromY, message.x, message.y);
     redraw();
   }
 }
@@ -219,6 +316,7 @@ redraw();
 window.addEventListener("resize", handleResize);
 
 canvas.addEventListener("mousedown", handleMouseDown);
+onlineButton.addEventListener("click", handleOnlineButton);
 
 cross.addEventListener("load", redraw);
 naught.addEventListener("load", redraw);
