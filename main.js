@@ -4,6 +4,7 @@ let ctx = canvas.getContext("2d");
 let server;
 let onlineButton = document.getElementById("onlineButton");
 let onlineStatus = document.getElementById("onlineStatus");
+let errorStatus = document.getElementById("error");
 
 let cellSize;
 
@@ -204,6 +205,7 @@ function handleOnlineButton() {
   if (!server) {
     onlineStatus.innerText = "Connecting";
     onlineButton.innerText = "Stop playing online";
+    errorStatus.innerText = "";
     
     server = new WebSocket("wss://nocress-server-172-105-82-118.duckdns.org:6257");
     
@@ -215,8 +217,12 @@ function handleOnlineButton() {
       }));
     });
     
+    server.addEventListener("error", () => {
+      errorStatus.innerText = "(try disabling AdBlock)";
+    });
+    
     server.addEventListener("close", () => {
-      onlineStatus.innerText = "Not connected (disable AdBlock?)";
+      onlineStatus.innerText = "Not connected";
       onlineButton.innerText = "Play online";
       resetGame();
       redraw();
