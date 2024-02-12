@@ -102,18 +102,21 @@ function checkWinning() {
 }
 
 function handleResize() {
+  let size1 = window.innerHeight - 8 - 32;
+  let size2 = window.innerWidth - 16;
+  
   let preferredSize;
   
-  if (window.innerWidth >= window.innerHeight) {
-    preferredSize = window.innerHeight - 16;
-  } else if (window.innerWidth < window.innerHeight) {
-    preferredSize = window.innerWidth - 16;
+  if (size1 < size2) {
+    preferredSize = size1;
+  } else {
+    preferredSize = size2;
   }
   
   canvas.width = preferredSize;
   canvas.height = preferredSize;
   
-  cellSize = canvas.width / 9;
+  cellSize = preferredSize / 9;
   
   redraw();
 }
