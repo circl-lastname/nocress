@@ -218,7 +218,7 @@ function handleOnlineButton() {
     });
     
     server.addEventListener("error", () => {
-      errorStatus.innerText = "(try disabling AdBlock)";
+      errorStatus.innerText = "(couldn't connect, try disabling AdBlock)";
     });
     
     server.addEventListener("close", () => {
