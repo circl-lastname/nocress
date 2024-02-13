@@ -2,7 +2,9 @@ let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
 
 let server;
+
 let onlineButton = document.getElementById("onlineButton");
+let leaveButton = document.getElementById("leaveButton");
 let onlineStatus = document.getElementById("onlineStatus");
 let errorStatus = document.getElementById("error");
 
@@ -248,6 +250,17 @@ function handleOnlineButton() {
   }
 }
 
+function handleLeaveButton() {
+  if (server && !waitingMode) {
+    audioEnd.play();
+    
+    findOpponent();
+    resetGame();
+    
+    redraw();
+  }
+}
+
 function handleServer(e) {
   let message = JSON.parse(e.data);
   
@@ -348,6 +361,7 @@ window.addEventListener("resize", handleResize);
 
 canvas.addEventListener("mousedown", handleMouseDown);
 onlineButton.addEventListener("click", handleOnlineButton);
+leaveButton.addEventListener("click", handleLeaveButton);
 
 cross.addEventListener("load", redraw);
 naught.addEventListener("load", redraw);
