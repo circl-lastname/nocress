@@ -15,6 +15,7 @@ let naught = new Image();
 naught.src = "o.svg";
 
 let audioStart = new Audio("game-start.wav");
+let audioEnd = new Audio("game-end.wav");
 let audioMove = new Audio("move-self.wav");
 let audioIllegal = new Audio("illegal.wav");
 
@@ -261,8 +262,11 @@ function handleServer(e) {
     redraw();
   } else if (message.action == "gameEnd") {
     if (!winningPlayer) {
+      audioEnd.play();
+      
       findOpponent();
       resetGame();
+      
       redraw();
     } else {
       onlineStatus.innerText = "Game ended";
