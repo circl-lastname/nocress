@@ -4,6 +4,7 @@ let ctx = canvas.getContext("2d");
 let server;
 
 let onlineButton = document.getElementById("onlineButton");
+let usernameButton = document.getElementById("usernameButton");
 let leaveButton = document.getElementById("leaveButton");
 let onlineStatus = document.getElementById("onlineStatus");
 let errorStatus = document.getElementById("error");
@@ -221,6 +222,13 @@ function handleOnlineButton() {
     server = new WebSocket("wss://172-105-82-118.ip.linodeusercontent.com:6257");
     
     server.addEventListener("open", () => {
+      if (localStorage.getItem("username")) {
+        server.send(JSON.stringify({
+          action: "setUsername",
+          username: localStorage.getItem("username")
+        }));
+      }
+      
       findOpponent();
       redraw();
     });
@@ -250,6 +258,17 @@ function handleOnlineButton() {
   }
 }
 
+function handleUsernameButton() {
+  localStorage.setItem("username", prompt("Enter new userame"));
+  
+  if (server) {
+    server.send(JSON.stringify({
+      action: "setUsername",
+      username: localStorage.getItem("username")
+    }));
+  }
+}
+
 function handleLeaveButton() {
   if (server && !waitingMode) {
     audioEnd.play();
@@ -265,7 +284,7 @@ function handleServer(e) {
   let message = JSON.parse(e.data);
   
   if (message.action == "foundOpponent") {
-    onlineStatus.innerText = "Game started";
+    onlineStatus.innerText = `Playing against ${message.username}`;
     audioStart.play();
     
     waitingMode = false;
@@ -361,6 +380,7 @@ window.addEventListener("resize", handleResize);
 
 canvas.addEventListener("mousedown", handleMouseDown);
 onlineButton.addEventListener("click", handleOnlineButton);
+usernameButton.addEventListener("click", handleUsernameButton);
 leaveButton.addEventListener("click", handleLeaveButton);
 
 cross.addEventListener("load", redraw);
