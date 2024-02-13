@@ -30,6 +30,8 @@ let initialBoard = [
   [2, 0, 0, 0, 2, 0, 0, 0, 2],
 ];
 
+let waitingMode = false;
+
 let board = [ [], [], [], [], [], [], [], [], [] ];
 
 let selectedCellX;
@@ -123,6 +125,16 @@ function makeMove(fromX, fromY, x, y) {
   currentPlayer = playerOpposite();
 }
 
+function findOpponent() {
+  waitingMode = true;
+  
+  onlineStatus.innerText = "Waiting for opponent";
+  
+  server.send(JSON.stringify({
+    action: "findOpponent"
+  }));
+}
+
 function sendMove(fromX, fromY, x, y) {
   server.send(JSON.stringify({
     action: "move",
@@ -160,11 +172,7 @@ function handleMouseDown(e) {
   
   if (winningPlayer) {
     if (onlinePlayer) {
-      onlineStatus.innerText = "Waiting for opponent";
-      
-      server.send(JSON.stringify({
-        action: "findOpponent"
-      }));
+      findOpponent();
     }
     
     resetGame();
@@ -210,11 +218,8 @@ function handleOnlineButton() {
     server = new WebSocket("wss://172-105-82-118.ip.linodeusercontent.com:6257");
     
     server.addEventListener("open", () => {
-      onlineStatus.innerText = "Waiting for opponent";
-      
-      server.send(JSON.stringify({
-        action: "findOpponent"
-      }));
+      findOpponent();
+      redraw();
     });
     
     server.addEventListener("error", () => {
@@ -224,8 +229,15 @@ function handleOnlineButton() {
     server.addEventListener("close", () => {
       onlineStatus.innerText = "Not connected";
       onlineButton.innerText = "Play online";
-      resetGame();
+      
+      if (!waitingMode) {
+        resetGame();
+      } else {
+        waitingMode = false;
+      }
+      
       redraw();
+      
       server = undefined;
     });
     
@@ -242,20 +254,15 @@ function handleServer(e) {
     onlineStatus.innerText = "Game started";
     audioStart.play();
     
+    waitingMode = false;
     resetGame();
     onlinePlayer = message.opponent;
     
     redraw();
   } else if (message.action == "gameEnd") {
     if (!winningPlayer) {
+      findOpponent();
       resetGame();
-      
-      onlineStatus.innerText = "Waiting for opponent";
-      
-      server.send(JSON.stringify({
-        action: "findOpponent"
-      }));
-      
       redraw();
     } else {
       onlineStatus.innerText = "Game ended";
@@ -316,6 +323,16 @@ function redraw() {
     } else {
       ctx.drawImage(naught, width+cellSize*0.05, cellSize*0.05, cellSize*0.4, cellSize*0.4);
     }
+  } else if (waitingMode) {
+    ctx.font = `${cellSize*0.5}px sans-serif`;
+    let width = ctx.measureText("Waiting room").width;
+    
+    ctx.fillStyle = "#262522";
+    ctx.fillRect(0, 0, width, cellSize*0.5);
+    
+    ctx.fillStyle = "#ffffff";
+    ctx.textBaseline = "top";
+    ctx.fillText("Waiting room", 0, 0);
   }
 }
 
