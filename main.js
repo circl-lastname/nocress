@@ -207,7 +207,7 @@ function handleOnlineButton() {
     onlineButton.innerText = "Stop playing online";
     errorStatus.innerText = "";
     
-    server = new WebSocket("wss://nocress-server-172-105-82-118.duckdns.org:6257");
+    server = new WebSocket("wss://172-105-82-118.ip.linodeusercontent.com:6257");
     
     server.addEventListener("open", () => {
       onlineStatus.innerText = "Waiting for opponent";
