@@ -260,6 +260,7 @@ function handleOnlineButton() {
 
 function handleUsernameButton() {
   localStorage.setItem("username", prompt("Enter new userame"));
+  usernameButton.innerText = `Change username (${localStorage.getItem("username")})`;
   
   if (server) {
     server.send(JSON.stringify({
@@ -374,6 +375,11 @@ function redraw() {
 
 resetGame();
 handleResize();
+
+if (localStorage.getItem("username")) {
+  usernameButton.innerText = `Change username (${localStorage.getItem("username")})`;
+}
+
 redraw();
 
 window.addEventListener("resize", handleResize);
