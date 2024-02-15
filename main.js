@@ -2,6 +2,7 @@ let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
 
 let server;
+let serverHeartbeat;
 
 let onlineButton = document.getElementById("onlineButton");
 let usernameButton = document.getElementById("usernameButton");
@@ -229,6 +230,12 @@ function handleOnlineButton() {
         }));
       }
       
+      serverHeartbeat = setInterval(() => {
+        server.send(JSON.stringify({
+          action: "keepAlive"
+        }));
+      }, 5*60*1000);
+      
       findOpponent();
       redraw();
     });
@@ -249,6 +256,7 @@ function handleOnlineButton() {
       
       redraw();
       
+      clearInterval(serverHeartbeat);
       server = undefined;
     });
     
