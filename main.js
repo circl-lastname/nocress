@@ -267,14 +267,28 @@ function handleOnlineButton() {
 }
 
 function handleUsernameButton() {
-  localStorage.setItem("username", prompt("Enter new userame"));
-  usernameButton.innerText = `Change username (${localStorage.getItem("username")})`;
+  let newUsername = prompt("Enter new userame");
   
-  if (server) {
-    server.send(JSON.stringify({
-      action: "setUsername",
-      username: localStorage.getItem("username")
-    }));
+  if (newUsername) {
+    localStorage.setItem("username", newUsername);
+    usernameButton.innerText = `Change username (${newUsername})`;
+    
+    if (server) {
+      server.send(JSON.stringify({
+        action: "setUsername",
+        username: newUsername
+      }));
+    }
+  } else {
+    localStorage.removeItem("username");
+    usernameButton.innerText = "Set username";
+    
+    if (server) {
+      server.send(JSON.stringify({
+        action: "setUsername",
+        username: "Anonymous"
+      }));
+    }
   }
 }
 
