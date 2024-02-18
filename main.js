@@ -395,14 +395,12 @@ function redraw() {
   }
 }
 
-resetGame();
-handleResize();
-
 if (localStorage.getItem("username")) {
   usernameButton.innerText = `Change username (${localStorage.getItem("username")})`;
 }
 
-redraw();
+resetGame();
+handleResize();
 
 window.addEventListener("resize", handleResize);
 
