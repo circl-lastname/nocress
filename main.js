@@ -294,6 +294,8 @@ function handleUsernameButton() {
 
 function handleLeaveButton() {
   if (server && !waitingMode) {
+    audioEnd.play();
+    
     findOpponent();
     resetGame();
     
