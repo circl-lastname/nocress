@@ -135,9 +135,11 @@ function findOpponent() {
   
   onlineStatus.innerText = "Waiting for opponent";
   
-  server.send(JSON.stringify({
-    action: "findOpponent"
-  }));
+  setTimeout(() => {
+    server.send(JSON.stringify({
+      action: "findOpponent"
+    }));
+  }, 500);
 }
 
 function sendMove(fromX, fromY, x, y) {
