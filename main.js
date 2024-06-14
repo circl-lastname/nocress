@@ -217,12 +217,15 @@ function handleMouseDown(e) {
 }
 
 function handleOnlineButton() {
+  errorStatus.innerText = "(Server has been closed)";
+  return;
+  
   if (!server) {
     onlineStatus.innerText = "Connecting";
     onlineButton.innerText = "Stop playing online";
     errorStatus.innerText = "";
     
-    server = new WebSocket("wss://172-105-82-118.ip.linodeusercontent.com:6257");
+    server = new WebSocket("");
     
     server.addEventListener("open", () => {
       if (localStorage.getItem("username")) {
